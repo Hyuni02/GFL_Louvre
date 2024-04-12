@@ -76,24 +76,26 @@ def update_buttons(page=0):
 
     # 페이지 넘김 버튼 (이전 페이지)
     if page > 0:
-        Button(frame, text="Previous", command=lambda: update_buttons(page-1)).grid(row=1, column=0, sticky='w', padx=10)
+        btn_prev = Button(frame, text="Previous", command=lambda: update_buttons(page-1))
+        btn_prev.grid(row=1, column=0, sticky='w', padx=10)
 
     # 페이지 넘김 버튼 (다음 페이지)
     if (page+1) * 5 < len(titles):
-        Button(frame, text="Next", command=lambda: update_buttons(page+1)).grid(row=1, column=4, sticky='e', padx=10)
+        btn_nxt = Button(frame, text="Next", command=lambda: update_buttons(page+1))
+        btn_nxt.grid(row=1, column=4, sticky='e', padx=10)
 
 
 # url에서 이미지 다운로드
-def fetch_image(url):
-    response = requests.get("https:"+url)
-    print("https:"+url)
-    image = response.content
+def fetch_image(_url):
+    response_img = requests.get("https:"+_url)
+    # print("https:"+url)
+    image = response_img.content
     pil_image = Image.open(io.BytesIO(image))
     return ImageTk.PhotoImage(pil_image)
 
 
-def open_url(url):
-    webbrowser.open('iopwiki.com/'+url)
+def open_url(_url):
+    webbrowser.open('iopwiki.com/'+_url)
 
 
 # 최초의 버튼 업데이트
