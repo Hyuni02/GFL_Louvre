@@ -60,7 +60,7 @@ def update_buttons(page=0):
 
     # loading 메시지 표시
     loading_label = Label(frame, text="loading....", font=font.Font(size=29))
-    loading_label.grid(row=0, column=0, columnspan=5, sticky="nesw")  # 메시지를 중앙에 배치
+    loading_label.place(relx = 0.5, rely= 0.5, anchor = "center")  # 메시지를 중앙에 배치
 
     window.update_idletasks()
 
