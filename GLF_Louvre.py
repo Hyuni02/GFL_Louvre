@@ -28,7 +28,6 @@ for span in spans:
         links.append(a_tag['href'])
         # print(a_tag['title'])
 
-
 for img in imgs:
     if img and 'src' in img.attrs:
         urls.append(img['src'])
@@ -38,6 +37,7 @@ for img in imgs:
 window = Tk()
 window.title("Title Buttons")
 window.geometry("768x240")
+window.resizable(False, False)
 
 # 현재 페이지 번호
 current_page = 0
@@ -60,12 +60,12 @@ def update_buttons(page=0):
 
     # loading 메시지 표시
     loading_label = Label(frame, text="loading....", font=font.Font(size=29))
-    loading_label.place(relx = 0.5, rely= 0.5, anchor = "center")  # 메시지를 중앙에 배치
+    loading_label.place(relx=0.5, rely=0.5, anchor="center")  # 메시지를 중앙에 배치
 
     window.update_idletasks()
 
     # 현재 페이지의 항목으로 버튼 생성, 페이지당 항목 수를 5개로 조정
-    for i in range(page*5, min((page+1)*5, len(titles))):
+    for i in range(page * 5, min((page + 1) * 5, len(titles))):
         _img = fetch_image(urls[i])
         global_images.append(_img)  # 이미지 객체를 전역 리스트에 추가하여 참조 유지
         button = Button(frame, image=_img, command=lambda _url=links[i]: open_url(_url))
@@ -76,18 +76,18 @@ def update_buttons(page=0):
 
     # 페이지 넘김 버튼 (이전 페이지)
     if page > 0:
-        btn_prev = Button(frame, text="Previous", command=lambda: update_buttons(page-1))
+        btn_prev = Button(frame, text="Previous", command=lambda: update_buttons(page - 1))
         btn_prev.grid(row=1, column=0, sticky='w', padx=10)
 
     # 페이지 넘김 버튼 (다음 페이지)
-    if (page+1) * 5 < len(titles):
-        btn_nxt = Button(frame, text="Next", command=lambda: update_buttons(page+1))
+    if (page + 1) * 5 < len(titles):
+        btn_nxt = Button(frame, text="Next", command=lambda: update_buttons(page + 1))
         btn_nxt.grid(row=1, column=4, sticky='e', padx=10)
 
 
 # url에서 이미지 다운로드
 def fetch_image(_url):
-    response_img = requests.get("https:"+_url)
+    response_img = requests.get("https:" + _url)
     # print("https:"+url)
     image = response_img.content
     pil_image = Image.open(io.BytesIO(image))
@@ -95,7 +95,7 @@ def fetch_image(_url):
 
 
 def open_url(_url):
-    webbrowser.open('iopwiki.com/'+_url)
+    webbrowser.open('iopwiki.com/' + _url)
 
 
 # 최초의 버튼 업데이트
