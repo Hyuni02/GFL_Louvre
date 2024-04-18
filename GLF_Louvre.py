@@ -97,7 +97,6 @@ def fetch_image(_url):
     return ImageTk.PhotoImage(pil_image)
 
 
-# todo gallerybox에 있는 아이템의 링크 가져오기
 def get_detailpage(_url):
     print('https://iopwiki.com/' + _url)
     response_detail = requests.get('https://iopwiki.com/' + _url)
@@ -108,8 +107,11 @@ def get_detailpage(_url):
         img_tag = thumb.find('img')
         if img_tag and 'src' in img_tag.attrs:
             thumb_url = 'https://iopwiki.com/'+img_tag['src']
+            if _url[6:] not in thumb_url:
+                print('invalid url - not for this character')
+                continue
             if '.jpg' in thumb_url:
-                print("invalid url")
+                print("invalid url - not character sprite")
                 continue
             img_url = thumb_url.replace('/thumb', '')
             sliced = img_url[:img_url.find('.png')+4]
