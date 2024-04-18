@@ -67,7 +67,7 @@ def update_buttons(page=0):
 
     # 현재 페이지의 항목으로 버튼 생성, 페이지당 항목 수를 5개로 조정
     for i in range(page * 5, min((page + 1) * 5, len(titles))):
-        _img = fetch_image(urls[i])
+        _img = fetch_image("https:" + urls[i])
         global_images.append(_img)  # 이미지 객체를 전역 리스트에 추가하여 참조 유지
         button = Button(frame, image=_img, command=lambda _url=links[i]: get_detailpage(_url))
         # .grid()를 사용하여 버튼을 가로로 배치, column은 i % 5로 설정하여 한 줄에 최대 5개까지만 배치
@@ -90,8 +90,8 @@ def update_buttons(page=0):
 
 # url에서 이미지 다운로드
 def fetch_image(_url):
-    response_img = requests.get("https:" + _url)
-    print("Fetch Image from https:"+url)
+    response_img = requests.get(_url)
+    print("Fetch Image from "+url)
     image = response_img.content
     pil_image = Image.open(io.BytesIO(image))
     return ImageTk.PhotoImage(pil_image)
@@ -114,8 +114,9 @@ def get_detailpage(_url):
                 print("invalid url - not character sprite")
                 continue
             img_url = thumb_url.replace('/thumb', '')
-            sliced = img_url[:img_url.find('.png')+4]
-            print(sliced)
+            fullimg_url = img_url[:img_url.find('.png')+4]
+            # print(fullimg_url)
+            fullimg = fetch_image(fullimg_url)
 
 
 # 최초의 버튼 업데이트
