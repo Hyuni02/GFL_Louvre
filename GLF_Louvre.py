@@ -69,7 +69,7 @@ def update_buttons(page=0):
     for i in range(page * 5, min((page + 1) * 5, len(titles))):
         _img = fetch_image(urls[i])
         global_images.append(_img)  # 이미지 객체를 전역 리스트에 추가하여 참조 유지
-        button = Button(frame, image=_img, command=lambda _url=links[i]: open_url(_url))
+        button = Button(frame, image=_img, command=lambda _url=links[i]: get_detailpage(_url))
         # .grid()를 사용하여 버튼을 가로로 배치, column은 i % 5로 설정하여 한 줄에 최대 5개까지만 배치
         button.grid(row=0, column=i % 5, padx=10, pady=10)  # padx와 pady는 버튼 사이의 간격 조정
 
@@ -97,9 +97,23 @@ def fetch_image(_url):
     return ImageTk.PhotoImage(pil_image)
 
 
-def open_url(_url):
-    print("Opening URL : " + _url)
-    webbrowser.open('iopwiki.com/' + _url)
+# todo gallerybox에 있는 아이템의 링크 가져오기
+def get_detailpage(_url):
+    print('https://iopwiki.com/' + _url)
+    response_detail = requests.get('https://iopwiki.com/' + _url)
+    response_detail.encoding = 'utf-8'
+    soup_detail = BeautifulSoup(response_detail.text, 'html.parser')
+    thumbs = soup_detail.find_all('a', 'image')
+    for thumb in thumbs:
+        img_tag = thumb.find('img')
+        if img_tag and 'src' in img_tag.attrs:
+            thumb_url = 'https://iopwiki.com/'+img_tag['src']
+            if '.jpg' in thumb_url:
+                print("invalid url")
+                continue
+            img_url = thumb_url.replace('/thumb', '')
+            sliced = img_url[:img_url.find('.png')+4]
+            print(sliced)
 
 
 # 최초의 버튼 업데이트
