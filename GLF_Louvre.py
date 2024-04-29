@@ -16,6 +16,7 @@ imgs = soup.find_all('img', 'doll-image')
 titles = []
 urls = []
 links = []
+fullimgs = []
 # 전역 변수로 이미지 참조를 저장할 리스트 추가
 global_images = []
 global_sprites = []
@@ -52,7 +53,7 @@ def display_main():
     window.geometry("768x240")
 
 
-def display_detail():
+def display_detailList():
     clear_display()
     window.geometry("1024x642")
 
@@ -65,8 +66,15 @@ def display_detail():
     for i in range(len(global_sprites_thumb)):
         if i % 2 == 1:
             continue
-        button = Button(frame, image=global_sprites_thumb[i])
-        button.grid(row=1, column= int(i/2), padx=10, pady=10)  # padx와 pady는 버튼 사이의 간격 조정
+        button = Button(frame, image=global_sprites_thumb[i],
+                        command=lambda _idx=i: display_detail(_idx))
+        button.grid(row=1, column=int(i / 2), padx=10, pady=10)  # padx와 pady는 버튼 사이의 간격 조정
+        # button.grid(row=1, column=i, padx=10, pady=10)  # padx와 pady는 버튼 사이의 간격 조정
+
+
+def display_detail(_idx):
+    print(fullimgs[_idx])
+    print(fullimgs[_idx + 1])
 
 
 def loading_start():
@@ -125,8 +133,8 @@ def update_buttons(page=0):
 
 # url에서 이미지 다운로드
 def fetch_image(_url):
-    response_img = requests.get(_url)
     print("Fetch Image from " + _url)
+    response_img = requests.get(_url)
     image = response_img.content
     pil_image = Image.open(io.BytesIO(image))
     pil_image2 = pil_image.resize((120, 120))
@@ -144,6 +152,8 @@ def get_detailpage(_url):
     global_sprites.clear()
     global global_sprites_thumb
     global_sprites_thumb.clear()
+    global fullimgs
+    fullimgs.clear()
 
     for thumb in thumbs:
         img_tag = thumb.find('img')
@@ -155,20 +165,25 @@ def get_detailpage(_url):
             if '.jpg' in thumb_url:
                 # print("invalid url - not character sprite")
                 continue
+            if '.jpeg' in thumb_url:
+                # print("invalid url - not character sprite")
+                continue
             if '_S.png' in thumb_url:
                 # print("character concept sheet")
                 continue
             if 'Censored' in thumb_url:
                 # print("Censored sprite")
                 continue
+            # print(f"original URL : {thumb_url}")
             img_url = thumb_url.replace('/thumb', '')
             fullimg_url = img_url[:img_url.find('.png') + 4]
+            fullimgs.append(fullimg_url)
             _img = fetch_image(fullimg_url)
             global_sprites.append(_img[0])
             global_sprites_thumb.append(_img[1])
 
     loading_end()
-    display_detail()
+    display_detailList()
 
 
 # 최초의 버튼 업데이트
