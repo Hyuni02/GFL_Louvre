@@ -1,4 +1,6 @@
 import io
+import tkinter
+
 import requests
 from bs4 import BeautifulSoup
 from tkinter import Tk, Frame, Button, Label, font
@@ -40,7 +42,6 @@ for img in imgs:
 window = Tk()
 window.title("GFL_Louvre")
 window.resizable(False, False)
-
 # 현재 페이지 번호
 current_page = 0
 
@@ -63,7 +64,7 @@ def display_main():
 def display_detail_list(_idx=0):
     loading_start()
     clear_display()
-    window.geometry("1024x642")
+    window.geometry("1024x700")
 
     btn_main = Button(frame, text="back",
                       command=lambda: [print("Press btn : back"), display_main()])
@@ -108,6 +109,8 @@ def loading_end():
 # 프레임 내의 모든 위젯 제거
 def clear_display():
     for widget in frame.winfo_children():
+        widget.destroy()
+    for widget in frame2.winfo_children():
         widget.destroy()
 
 
@@ -154,7 +157,7 @@ def fetch_image(_url):
     image = response_img.content
     pil_image = Image.open(io.BytesIO(image))
     pil_image_thumb = pil_image.resize((120, 120))
-    pil_image_skin = pil_image.resize((360, 360))
+    pil_image_skin = pil_image.resize((480, 480))
     return ImageTk.PhotoImage(pil_image), ImageTk.PhotoImage(pil_image_thumb), ImageTk.PhotoImage(pil_image_skin)
 
 
