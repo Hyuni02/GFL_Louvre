@@ -1,5 +1,5 @@
 import io
-import tkinter
+import os
 
 import requests
 from bs4 import BeautifulSoup
@@ -128,7 +128,7 @@ def update_buttons(page=0):
 
     # 현재 페이지의 항목으로 버튼 생성, 페이지당 항목 수를 5개로 조정
     for i in range(page * 5, min((page + 1) * 5, len(titles))):
-        _img = fetch_image("https:" + urls[i])[0]
+        _img = get_image("https:" + urls[i])[0]
         global_images.append(_img)  # 이미지 객체를 전역 리스트에 추가하여 참조 유지
         button = Button(frame, image=_img,
                         command=lambda _url=links[i]: get_detailpage(_url))
@@ -150,15 +150,43 @@ def update_buttons(page=0):
         btn_nxt.grid(row=1, column=4, sticky='e', padx=10)
 
 
+def get_image(_url):
+    change = 'SLI'
+    colon = 'COLON'
+    # todo 로컬에서 이미지 찾기
+    folder_path = 'imgs'
+    _url = _url.replace('/', change)
+    _url = _url.replace(':', colon)
+    for root, dirs, files in os.walk(folder_path):
+        if _url in files:
+            # image = os.path.join(root, _url)
+            pil_image = Image.open(os.path.join(root, _url))
+            pil_image_thumb = pil_image.resize((120, 120))  # 스킨 썸네일 표시용 이미지
+            pil_image_skin = pil_image.resize((480, 480))  # 스킨 표시용 이미지
+            return ImageTk.PhotoImage(pil_image), \
+                ImageTk.PhotoImage(pil_image_thumb), \
+                ImageTk.PhotoImage(pil_image_skin)
+    print(f"No img : {_url}")
+
+    # todo 로컬에서 없으면 이미지 다운 받기
+    _url = _url.replace(change, '/')
+    _url = _url.replace(colon, ':')
+    downloaded_image = fetch_image(_url)
+
+    # todo 다운 받은 이미지 로컬에 저장하기
+    _url = _url.replace('/', change)
+    _url = _url.replace(':', colon)
+    with open(f"imgs/{_url}", 'wb') as f:
+        f.write(downloaded_image)
+
+    return get_image(_url)
+
+
 # url에서 이미지 다운로드
 def fetch_image(_url):
     print("Fetch Image from " + _url)
     response_img = requests.get(_url)
-    image = response_img.content
-    pil_image = Image.open(io.BytesIO(image))
-    pil_image_thumb = pil_image.resize((120, 120))
-    pil_image_skin = pil_image.resize((480, 480))
-    return ImageTk.PhotoImage(pil_image), ImageTk.PhotoImage(pil_image_thumb), ImageTk.PhotoImage(pil_image_skin)
+    return response_img.content
 
 
 # 선택한 캐릭터 스킨 불러오기 및 표시
@@ -199,7 +227,7 @@ def get_detailpage(_url):
             img_url = thumb_url.replace('/thumb', '')
             fullimg_url = img_url[:img_url.find('.png') + 4]
             fullimgs.append(fullimg_url)
-            _img = fetch_image(fullimg_url)
+            _img = get_image(fullimg_url)
             global_sprites.append(_img[2])
             global_sprites_thumb.append(_img[1])
 
